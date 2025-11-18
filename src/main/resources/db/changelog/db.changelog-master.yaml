@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-game-state
+      author: giuseppe
+      changes:
+        - createTable:
+            tableName: game_state
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: turn_number
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: grid_string
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: saved
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
