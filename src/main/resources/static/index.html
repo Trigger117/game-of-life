@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Game of Life – Test</title>
+    <title>Game of Life</title>
 
     <style>
         body {
@@ -10,6 +10,11 @@
             background: #f5f7fa;
             padding: 20px;
             color: #2c3e50;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
         }
 
         h1 {
@@ -21,51 +26,53 @@
             margin-bottom: 12px;
         }
 
-        /* wrapper per evitare il "lenzuolo" lungo */
         .grid-wrapper {
             display: inline-block;
-            padding: 8px;
-            border: 1px solid #ccc;
+            padding: 10px;
+            border: 2px solid #bbb;
             background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.08);
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         #grid {
-            display: inline-grid;               /* <-- shrink alla griglia */
-            grid-template-columns: repeat(10, 30px);
-            grid-auto-rows: 30px;
+            display: grid;
+            grid-template-columns: repeat(10, 32px);
+            grid-template-rows: repeat(10, 32px);
+            border: 1px solid #ccc;
+            background: white;
         }
 
         .cell {
-            width: 30px;
-            height: 30px;
-            border-right: 1px solid #eee;
-            border-bottom: 1px solid #eee;
+            border: 1px solid #cec8c8;
             font-family: monospace;
-            font-size: 18px;
+            font-size: 19px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #ffffff;
         }
 
-        /* ultimi della riga: niente bordo destro */
-        .cell:nth-child(10n) {
-            border-right: none;
+        /* Colori dei simboli */
+        .cell-at {
+            color: #3498db;
         }
 
-        /* ultime 10 celle: niente bordo in basso */
-        .cell:nth-last-child(-n + 10) {
-            border-bottom: none;
+        .cell-percent {
+            color: #e74c3c;
         }
 
-        /* Colori SOLO del simbolo (non dello sfondo) */
-        .cell-at      { color: #3498db; } /* @ */
-        .cell-percent { color: #e74c3c; } /* % */
-        .cell-hash    { color: #27ae60; } /* # */
-        .cell-o       { color: #2c3e50; } /* O */
+        .cell-hash {
+            color: #27ae60;
+        }
 
-        button {
+        .cell-o {
+            color: #2c3e50;
+        }
+
+        .controls button {
             padding: 6px 12px;
             font-size: 13px;
             border-radius: 4px;
@@ -75,7 +82,7 @@
             margin-right: 5px;
         }
 
-        button:hover {
+        .controls button:hover {
             background: #2980b9;
             cursor: pointer;
         }
@@ -101,91 +108,93 @@
         .legend-percent { color: #e74c3c; }
         .legend-hash    { color: #27ae60; }
         .legend-o       { color: #2c3e50; }
+
     </style>
 </head>
 <body>
 
-<h1>Game of Life – Test</h1>
+<div class="container">
+    <h1>Game of Life – Test</h1>
 
-<div class="controls">
-    <button id="stepBtn">Step</button>
-    <button id="saveBtn">Save</button>
-    <button id="loadBtn">Load</button>
-    <button id="resetBtn">Reset</button>
-</div>
+    <div class="controls">
+        <button id="stepBtn">Step</button>
+        <button id="saveBtn">Save</button>
+        <button id="loadBtn">Load</button>
+        <button id="resetBtn">Reset</button>
+    </div>
 
-<div class="grid-wrapper">
-    <div id="grid"></div>
-</div>
+    <div class="grid-wrapper">
+        <div id="grid"></div>
+    </div>
 
-<div class="legend">
-    <span><span class="legend-symbol legend-at">@</span>(predatore di #, preda di %)</span>
-    <span><span class="legend-symbol legend-percent">%</span>(predatore di @)</span>
-    <span><span class="legend-symbol legend-hash">#</span>(cibo, statico)</span>
-    <span><span class="legend-symbol legend-o">O</span>(ostacolo, statico)</span>
-</div>
+    <div class="legend">
+        <span><span class="legend-symbol legend-at">@</span>(predatore di #, preda di %)</span>
+        <span><span class="legend-symbol legend-percent">%</span>(predatore di @)</span>
+        <span><span class="legend-symbol legend-hash">#</span>(cibo, statico)</span>
+        <span><span class="legend-symbol legend-o">O</span>(ostacolo, statico)</span>
+    </div>
 
-<script>
-    const gridDiv = document.getElementById('grid');
+    <script>
+        const gridDiv = document.getElementById('grid');
 
-    function renderGrid(game) {
-        const rows = game.grid;
-        gridDiv.innerHTML = '';
+        function renderGrid(game) {
+            const rows = game.grid;
+            gridDiv.innerHTML = '';
 
-        for (let r = 0; r < rows.length; r++) {
-            const row = rows[r];
-            for (let c = 0; c < row.length; c++) {
-                const ch = row[c];
-                const cell = document.createElement('div');
-                cell.className = 'cell';
+            for (let r = 0; r < rows.length; r++) {
+                const row = rows[r];
+                for (let c = 0; c < row.length; c++) {
+                    const ch = row[c];
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
 
-                if (ch === '@') cell.classList.add("cell-at");
-                else if (ch === '%') cell.classList.add("cell-percent");
-                else if (ch === '#') cell.classList.add("cell-hash");
-                else if (ch === 'O') cell.classList.add("cell-o");
+                    if (ch === '@') cell.classList.add("cell-at");
+                    else if (ch === '%') cell.classList.add("cell-percent");
+                    else if (ch === '#') cell.classList.add("cell-hash");
+                    else if (ch === 'O') cell.classList.add("cell-o");
 
-                cell.textContent = ch === ' ' ? '' : ch;
-                gridDiv.appendChild(cell);
+                    cell.textContent = ch === ' ' ? '' : ch;
+                    gridDiv.appendChild(cell);
+                }
             }
         }
-    }
 
-    async function api(path, method = 'GET') {
-        const res = await fetch('/api/game' + path, { method });
-        if (!res.ok) {
-            alert('Request failed: ' + res.status);
-            throw new Error('HTTP ' + res.status);
+        async function api(path, method = 'GET') {
+            const res = await fetch('/api/game' + path, {method});
+            if (!res.ok) {
+                alert('Request failed: ' + res.status);
+                throw new Error('HTTP ' + res.status);
+            }
+            if (res.status === 204) return null;
+            return res.json();
         }
-        if (res.status === 204) return null;
-        return res.json();
-    }
 
-    document.getElementById('stepBtn').onclick = async () => {
-        const game = await api('/step', 'POST');
-        renderGrid(game);
-    };
+        document.getElementById('stepBtn').onclick = async () => {
+            const game = await api('/step', 'POST');
+            renderGrid(game);
+        };
 
-    document.getElementById('saveBtn').onclick = async () => {
-        await api('/save', 'POST');
-        alert('Game saved snapshot');
-    };
+        document.getElementById('saveBtn').onclick = async () => {
+            await api('/save', 'POST');
+            alert('Game saved snapshot');
+        };
 
-    document.getElementById('loadBtn').onclick = async () => {
-        const game = await api('/load', 'GET');
-        if (game) renderGrid(game);
-        else alert('Nessun salvataggio trovato');
-    };
+        document.getElementById('loadBtn').onclick = async () => {
+            const game = await api('/load', 'GET');
+            if (game) renderGrid(game);
+            else alert('Nessun salvataggio trovato');
+        };
 
-    document.getElementById('resetBtn').onclick = async () => {
-        const game = await api('/reset', 'DELETE');
-        renderGrid(game);
-    };
+        document.getElementById('resetBtn').onclick = async () => {
+            const game = await api('/reset', 'DELETE');
+            renderGrid(game);
+        };
 
-    (async () => {
-        const game = await api('', 'GET');
-        renderGrid(game);
-    })();
-</script>
-
+        (async () => {
+            const game = await api('', 'GET');
+            renderGrid(game);
+        })();
+    </script>
+</div>
 </body>
 </html>

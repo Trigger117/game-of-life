@@ -23,6 +23,8 @@ java -jar target/game-of-life-0.0.1-SNAPSHOT.jar
 3️⃣ Apri nel browser:
 http://localhost:8080/
 
+
+
 🐳 Avvio tramite Docker
 1️⃣ Build dell’immagine:
 docker build -t game-of-life .
@@ -39,11 +41,3 @@ src/main/java/...                      ← Controller, Service, Logic
 src/main/resources/db/changelog/       ← Liquibase
 Dockerfile
 pom.xml
-
-❗ Note
-
-Tutta la logica del gioco è nel backend.
-
-Lo stato viene salvato nel DB a ogni step.
-
-Ogni 20 turni viene aggiunta una nuova entità.
